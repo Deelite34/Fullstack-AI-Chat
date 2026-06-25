@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+input::placeholder {
+  text-align: center;
+}
+
+.txt-shadow {
+  text-shadow: 1px 1px 2px black;
+}
+
+.chatbox {
+  width: 64rem;
+  max-width: 95vw;
+  min-width: 17rem;
+}
+
+.chatbox-msg-container {
+  display: flex;
+}
+
+.chatbox-msg-container .chatbox-msg:nth-child(odd) {
+  background-color: rgba(157, 49, 130, 0.238);
+  text-align: start;
+}
+
+.chatbox-msg-container .chatbox-msg:nth-child(even) {
+  background-color: rgba(0, 127, 182, 0.238);
+  text-align: start;
+}
+
+.chatbox-msg {
+  border: 1px solid rgba(165, 42, 42, 0.2);
+  width: 90%;
+  min-height: 2rem;
+  border-radius: 1.5rem;
+  padding: 0.5em;
+}
+
+.chatbox-output-user-msg {
+  align-self: flex-start;
+  margin-right: 2rem;
+  margin-left: 2rem;
+  border-top-left-radius: 0;
+}
+
+.chatbox-output-bot-msg {
+  align-self: flex-end;
+  margin-right: 2rem;
+  margin-left: 2rem;
+  border-top-right-radius: 0;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.chat-send-msg-btn {
+  aspect-ratio: 1 / 1;
+}
+
+.chat-send-msg-btn:active {
+  @apply bg-slate-700;
+}
+
+.input-container {
+  gap: clamp(0.5em, 1vw, 2rem);
+}

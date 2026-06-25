@@ -1,0 +1,93 @@
+services:
+  db:
+    container_name: app_db
+    image: postgres:18
+    environment:
+      - POSTGRES_DB=${APP_DB_NAME}
+      - POSTGRES_USER=${APP_DB_USER}
+      - POSTGRES_PASSWORD=${APP_DB_PASSWORD}
+      - POSTGRES_HOSTNAME=${APP_DB_HOSTNAME}
+    networks:
+      - app_network
+    volumes:
+      - postgres_data:/var/lib/postgresql/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+    # command: tail -F anything
+
+  backend:
+    container_name: backend
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+    networks:
+      - app_network
+    volumes:
+      - ./data:/app/data
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+      - "5678:5678"
+    depends_on:
+      - db
+    develop:
+      watch:
+        - action: sync
+          path: ./backend  # local path of backend
+          target: /app  # # docker path of backend
+    stdin_open: true
+    tty: true
+  
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    networks:
+      - app_network
+    restart: always
+    ports:
+      - "5173:5173"
+    stdin_open: true
+    tty: true
+
+
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/
+          target: /frontend/
+          ignore: 
+            - ./frontend/node_modules
+            - ./frontend/package.json
+            - ./frontend/pnpm-lock.json
+        - action: rebuild
+          path: ./frontend/package.json
+        - action: rebuild
+          path: ./frontend/pnpm-lock.json
+
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:rocm  # use ':latest' on nvidia, or ':rocm' on amd gpu
+    ports: 
+      - "11434:11434"
+    tty: true
+    volumes:
+      - ./ollama:/ollama
+    restart: unless-stopped
+    networks:
+      - app_network
+    entrypoint: ["/ollama/run_ollama.sh"]
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  ollama: {}
+  
