@@ -1,4 +1,4 @@
-# Chatapp
+# Full Stack AI Chat
 <img width="1336" height="1269" alt="obraz" src="https://github.com/user-attachments/assets/542aa51c-5754-4890-a080-221e3809d41a" />
 
 Full-stack AI chat application.
