@@ -43,6 +43,7 @@ export function ChatInput(props: ChatInputProps) {
           value={inputValue}
           onChange={(e)=>setInputValue(e.target.value)}
           onKeyDown={handleFormCtrlEnter}
+          spellCheck={false}
         />
         <button
           className="cursor-pointer chat-send-msg-btn w-16 h-16 p-2 border-4 border-slate-600 bg-slate-600 rounded-3xl"

@@ -1,9 +1,9 @@
-from typing import Generator
+from collections.abc import Generator
 
 from config.settings import Config
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Session, sessionmaker
 
 engine = create_engine(Config.DATABASE_URL)
 

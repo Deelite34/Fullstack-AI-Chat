@@ -1,10 +1,10 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from config.settings import Config
-from routers.chat import llm_router
-
 import logging
 import logging.config
+
+from config.settings import Config
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from routers.chat import llm_router
 
 
 def configure_logging():

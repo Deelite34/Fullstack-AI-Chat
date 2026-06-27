@@ -6,7 +6,6 @@ import './App.css'
 import ConversationChatBox from './components/chat/ChatBox';
 
 function App() {
-
   return (
     <>
       <section id="center">

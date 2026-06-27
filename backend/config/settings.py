@@ -1,7 +1,12 @@
 import os
 
 
+def get_config():
+    return Config
+
+
 class Config:
+    DEBUG = True
     LOG_LEVEL = os.getenv("LOG_LEVEL")
 
     APP_DB_USER = os.environ.get("APP_DB_USER")
@@ -9,24 +14,14 @@ class Config:
     APP_DB_NAME = os.environ.get("APP_DB_NAME")
     APP_DB_HOSTNAME = os.environ.get("APP_DB_HOSTNAME")
 
-    DATABASE_URL = "postgresql://{}:{}@{}:5432/{}".format(
-        APP_DB_USER,
-        APP_DB_PASSWORD,
-        APP_DB_NAME,
-        APP_DB_HOSTNAME,
-    )
+    DATABASE_URL = f"postgresql://{APP_DB_USER}:{APP_DB_PASSWORD}@{APP_DB_NAME}:5432/{APP_DB_HOSTNAME}"
 
     APP_DB_TEST_USER = os.environ.get("APP_DB_TEST_USER")
     APP_DB_TEST_PASSWORD = os.environ.get("APP_DB_TEST_PASSWORD")
     APP_DB_TEST_NAME = os.environ.get("APP_DB_TEST_NAME")
     APP_DB_TEST_HOSTNAME = os.environ.get("APP_DB_TEST_HOSTNAME")
 
-    TEST_DATABASE_URL = "postgresql://{}:{}@{}:5433/{}".format(
-        APP_DB_TEST_USER,
-        APP_DB_TEST_PASSWORD,
-        APP_DB_TEST_NAME,
-        APP_DB_TEST_HOSTNAME,
-    )
+    TEST_DATABASE_URL = f"postgresql://{APP_DB_TEST_USER}:{APP_DB_TEST_PASSWORD}@{APP_DB_TEST_NAME}:5433/{APP_DB_TEST_HOSTNAME}"
 
     LOGGING_CONFIG = {
         "version": 1,
@@ -34,14 +29,14 @@ class Config:
         "formatters": {
             "standard": {
                 "()": "uvicorn.logging.DefaultFormatter",
-                "format": "{levelprefix} [{name}] {message}",
+                "format": "{levelprefix} [{name}] {message}",  # 'context' key in extra parameter of logging
                 "datefmt": "%d %H:%M:%S",
                 "style": "{",
                 "use_colors": True,
             },
             "detailed": {
                 "()": "uvicorn.logging.DefaultFormatter",
-                "format": "{levelprefix} [{name}] {message}\t {filename}-{lineno}:[{asctime}]",  # thread number, time etc can be present here
+                "format": "{levelprefix} [{name}] {message}\t {filename}-{lineno}:[{asctime}]",
                 "datefmt": "%d %H:%M:%S",
                 "style": "{",
                 "use_colors": True,
@@ -63,7 +58,7 @@ class Config:
             },
         },
     }
-    DB_ECHO = False
+    DB_ECHO = True
 
     OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "test_key")
 
