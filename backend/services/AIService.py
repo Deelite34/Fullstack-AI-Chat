@@ -163,6 +163,7 @@ class LangchainOllamaClient(AbstractAiclient):
             message_chunk = chunk[0]  # chunk[0] is ai res object, chunk[1] is metadata
             if isinstance(message_chunk, AIMessageChunk):
                 text = message_chunk.text
+                # TODO: pack AI generated output into schema
                 yield text
                 chunks.append((message_chunk, {}))
                 full_text_response += text
@@ -186,7 +187,7 @@ class AIServiceManager:
     @classmethod
     def get_service(
         cls,
-        ai_client_type: AbstractAiclient,
+        ai_client_type: str,
         config: Config,
     ) -> AbstractAiclient:
         """Get and return AI service.

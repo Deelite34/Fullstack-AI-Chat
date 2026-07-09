@@ -1,7 +1,12 @@
 import logging
-from typing import Annotated
+from typing import Annotated, Generator
 
-from config.settings import Config, get_config
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from db import get_session
+from models.auth import User
+from config.settings import config
 from fastapi import APIRouter, Depends
 from fastapi.responses import RedirectResponse, StreamingResponse
 from schemas.chat import ChatInput
@@ -23,8 +28,7 @@ async def debug_view():
 
 @llm_router.post("/api/stream", status_code=200)
 async def stream_response(
-    chat_message: ChatInput,
-    config: Annotated[Config, Depends(get_config)],
+    chat_message: ChatInput, session: Annotated[Session, Depends(get_session)]
 ):
     """Handle received chat text, pass it to LLM and stream generated response."""
     logger.info(
@@ -36,7 +40,7 @@ async def stream_response(
         "X-Accel-Buffering": "no",  # Prevent some proxies / nginx from buffering the response
         "Cache-Control": "no-transform",  # Hint proxies and intermediaries not to transform or delay the content
     }
-    ai_service = AIServiceManager.get_service(Config.AIService, config)
+    ai_service = AIServiceManager.get_service(config.AIService, config)
 
     return StreamingResponse(
         ai_service.get_response(chat_message.chat_text),
@@ -48,7 +52,7 @@ async def stream_response(
 @llm_router.post("/api/stream/debug", status_code=200)
 async def stream_debug_response(
     chat_message: ChatInput,
-    config: Annotated[Config, Depends(get_config)],
+    db: Annotated[Session, Depends(get_session)],
 ):
     """Handle received chat text, pass it to LLM and return generated response."""
     logger.info(
@@ -60,7 +64,7 @@ async def stream_debug_response(
         "X-Accel-Buffering": "no",  # Prevent some proxies / nginx from buffering the response
         "Cache-Control": "no-transform",  # Hint proxies and intermediaries not to transform or delay the content
     }
-    ai_service = AIServiceManager.get_service(Config.AIService, config)
+    ai_service = AIServiceManager.get_service(config.AIService, config)
 
     return StreamingResponse(
         ai_service.get_response(chat_message.chat_text),

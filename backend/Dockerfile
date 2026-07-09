@@ -1,12 +1,13 @@
-FROM python:3.13-slim
+FROM python:3.13.14-slim
 
 ENV PYTHONBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
-COPY --from=ghcr.io/astral-sh/uv:0.7.12 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.11.26 /uv /uvx /bin/
 
 RUN pip install --no-cache-dir --upgrade pip \
     && apt-get update \
+    && apt-get install nano \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

@@ -25,6 +25,7 @@ services:
       - app_network
     volumes:
       - ./data:/app/data
+      - ./backend/alembic/versions/:/app/alembic/versions
     restart: always
     env_file:
       - .env

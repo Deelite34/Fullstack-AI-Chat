@@ -43,7 +43,7 @@ function AboutModal() {
 
     return (
         <>
-            <button className="generic-btn" onClick={handleToggleModal}>About</button>
+            <button className="generic-btn hover:cursor-pointer grow" onClick={handleToggleModal}>About</button>
             {isAboutModalOpen && createPortal(
                 <ModalDisplay handleToggleModal={handleToggleModal}/>,
                 modalRoot
@@ -61,7 +61,7 @@ function ModalDisplay({handleToggleModal}: { handleToggleModal: () => void }) {
                     <p>It is a learning experience for me, to learn new topics in frontend/full-stack programming.</p>
                     <p>Features AI chat built with React and Typescript, with Ollama (Local LLM) responses streamed from async FastAPI backend. Check README.md for up to date details.</p>
                 </div>
-                <button onClick={handleToggleModal}>close</button>
+                <button className="hover:cursor-pointer" onClick={handleToggleModal}>close</button>
             </div>
         
     )

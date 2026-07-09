@@ -1,8 +1,5 @@
+from functools import lru_cache
 import os
-
-
-def get_config():
-    return Config
 
 
 class Config:
@@ -14,7 +11,6 @@ class Config:
     APP_DB_NAME = os.environ.get("APP_DB_NAME")
     APP_DB_HOSTNAME = os.environ.get("APP_DB_HOSTNAME")
 
-    DATABASE_URL = f"postgresql://{APP_DB_USER}:{APP_DB_PASSWORD}@{APP_DB_NAME}:5432/{APP_DB_HOSTNAME}"
 
     APP_DB_TEST_USER = os.environ.get("APP_DB_TEST_USER")
     APP_DB_TEST_PASSWORD = os.environ.get("APP_DB_TEST_PASSWORD")
@@ -73,3 +69,13 @@ class Config:
     MODEL_PROVIDER = "ollama"
     OLLAMA_MODEL = "llama3.2"
     OLLAMA_SYSTEM_PROMPT = "Limit your responses to maximum of 500 characters."
+
+    @property
+    def get_db_url(self):
+        return f"postgresql://{self.APP_DB_USER}:{self.APP_DB_PASSWORD}@{self.APP_DB_NAME}:5432/{self.APP_DB_HOSTNAME}"
+
+@lru_cache
+def get_config() -> Config:
+    return Config()
+
+config = get_config()
