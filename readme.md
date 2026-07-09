@@ -27,5 +27,7 @@ Features to work on or consider, but while also resisting feature creep, where I
 
 ## Running
 
-Run command:
+Run commands:
 docker compose up --build --watch
+docker compose exec -it backend alembic upgrade head
+Launch [website in http://localhost:5173/](http://localhost:5173/)
