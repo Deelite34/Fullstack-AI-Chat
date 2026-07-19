@@ -26,7 +26,7 @@ Features to work on or consider, but while also resisting feature creep, where I
 - Add option to persists conversation in PostgreSQL database instead of memory
 
 ## Running
-
+Create `.env` file based on `example.env` in project root.
 Run commands:
 docker compose up --build --watch
 docker compose exec -it backend alembic upgrade head
