@@ -26,5 +26,20 @@
                 }
             ]
         },
+        { // run this after running cmd: docker compose exec -it backend uv run debugpy --wait-for-client --listen 0.0.0.0:5679 -m pytest
+            "name": "Remote debug pytest tests",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5679
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/backend",
+                    "remoteRoot": "/app"
+                }
+            ]
+        },
     ]
 }

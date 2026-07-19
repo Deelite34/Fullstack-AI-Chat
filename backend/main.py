@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers.chat import llm_router
 from routers.auth import auth_router
 
+
 def configure_logging():
     logging.config.dictConfig(config.LOGGING_CONFIG)
 
@@ -19,8 +20,7 @@ def create_app() -> FastAPI:
         CORSMiddleware,
         allow_origins=config.cors_origins,
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     )
     app.include_router(llm_router)
     app.include_router(auth_router)

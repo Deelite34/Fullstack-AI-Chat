@@ -1,16 +1,14 @@
 import logging
-from typing import Annotated, Generator
+from typing import Annotated
 
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from db import get_session
-from models.auth import User
 from config.settings import config
 from fastapi import APIRouter, Depends
 from fastapi.responses import RedirectResponse, StreamingResponse
 from schemas.chat import ChatInput
-from services.AIService import AIServiceManager
+from services.ai_service import AIServiceManager
 
 llm_router = APIRouter()
 logger = logging.getLogger(__name__)

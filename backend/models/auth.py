@@ -18,8 +18,8 @@ class User(db.Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(String(50), unique=True)
     email: Mapped[str] = mapped_column(String(200), unique=True)
-    _password: Mapped[str]
-    _salt: Mapped[str]
+    _password: Mapped[str] = mapped_column()
+    _salt: Mapped[str] = mapped_column()
     activated: Mapped[bool] = mapped_column(default=False)
     activation_code: Mapped[str] = mapped_column(
         String(36), nullable=True, default=make_uuid
@@ -36,17 +36,16 @@ class User(db.Base):
         """
         if not self._salt:
             self._salt = bcrypt.gensalt().decode("utf-8")
+        return self._make_salted_hash(raw_password, self._salt)
 
+    @staticmethod
+    def _make_salted_hash(raw_password: str, salt: str) -> str:
+        """Encode input password with input salt and return the hashed password"""
         pw_encoded = raw_password.encode("utf-8")
-        salt_encoded = self._salt.encode("utf-8")
+        salt_encoded = salt.encode("utf-8")
         return bcrypt.hashpw(pw_encoded, salt_encoded).decode("utf-8")
 
-    @password.setter
-    def password(self, value: str) -> None:
-        """ Hash value and set it as password for model instance"""
-        self._password = self.make_salted_hash(value)
-
-    def verify_password(self, value: str) -> bool:
-        """Hash raw password and verify against actual password. Return bool if password is valid"""
-        pw_to_verify = self.make_salted_hash(value)
-        return pw_to_verify == self._password
+    @password.setter  # type: ignore
+    def password(self, password: str) -> None:
+        """Hash value and set it as password for model instance"""
+        self._password = self.make_salted_hash(password)

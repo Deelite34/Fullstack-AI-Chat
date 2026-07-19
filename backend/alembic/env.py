@@ -16,11 +16,11 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from models.auth import User, db # noqa
-from config.settings import Config
+from models.auth import User, db  # noqa
+from config.settings import get_config  # noqa
 
-# set db url from env vars
-config.set_main_option("sqlalchemy.url", Config.get_db_url)
+# Set db url from env vars
+config.set_main_option("sqlalchemy.url", get_config().db_url)  # type: ignore
 target_metadata = db.Base.metadata
 
 # other values from the config, defined by the needs of env.py,
@@ -67,9 +67,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

@@ -1,8 +1,15 @@
+from datetime import timedelta
 from functools import lru_cache
 import os
 
 
 class Config:
+    # Jwt settings
+    SECRET_KEY = os.environ.get("SECRET_KEY", "supersecretvalue")
+    ALGORITHM = "HS256"
+    ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
+    REFRESH_TOKEN_EXPIRES = timedelta(days=1)
+
     DEBUG = True
     LOG_LEVEL = os.getenv("LOG_LEVEL")
 
@@ -11,13 +18,10 @@ class Config:
     APP_DB_NAME = os.environ.get("APP_DB_NAME")
     APP_DB_HOSTNAME = os.environ.get("APP_DB_HOSTNAME")
 
-
-    APP_DB_TEST_USER = os.environ.get("APP_DB_TEST_USER")
-    APP_DB_TEST_PASSWORD = os.environ.get("APP_DB_TEST_PASSWORD")
-    APP_DB_TEST_NAME = os.environ.get("APP_DB_TEST_NAME")
-    APP_DB_TEST_HOSTNAME = os.environ.get("APP_DB_TEST_HOSTNAME")
-
-    TEST_DATABASE_URL = f"postgresql://{APP_DB_TEST_USER}:{APP_DB_TEST_PASSWORD}@{APP_DB_TEST_NAME}:5433/{APP_DB_TEST_HOSTNAME}"
+    TEST_APP_DB_USER = os.environ.get("TEST_APP_DB_USER")
+    TEST_APP_DB_PASSWORD = os.environ.get("TEST_APP_DB_PASSWORD")
+    TEST_APP_DB_NAME = os.environ.get("TEST_APP_DB_NAME")
+    TEST_APP_DB_HOSTNAME = os.environ.get("TEST_APP_DB_HOSTNAME")
 
     LOGGING_CONFIG = {
         "version": 1,
@@ -58,7 +62,8 @@ class Config:
 
     OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "test_key")
 
-    cors_origins = ["*"]
+    # TODO: check later best way to set this up, at least for local development
+    cors_origins = []
 
     RABBITMQ_HOST = os.environ.get("RABBITMQ_HOST", "rabbitmq")
     RABBITMQ_MAX_CONN_RETRIES = 3
@@ -71,11 +76,17 @@ class Config:
     OLLAMA_SYSTEM_PROMPT = "Limit your responses to maximum of 500 characters."
 
     @property
-    def get_db_url(self):
+    def db_url(self) -> str:
         return f"postgresql://{self.APP_DB_USER}:{self.APP_DB_PASSWORD}@{self.APP_DB_NAME}:5432/{self.APP_DB_HOSTNAME}"
+
+    @property
+    def test_db_url(self) -> str:
+        return f"postgresql://{self.TEST_APP_DB_USER}:{self.TEST_APP_DB_PASSWORD}@{self.TEST_APP_DB_NAME}:5433/{self.TEST_APP_DB_HOSTNAME}"
+
 
 @lru_cache
 def get_config() -> Config:
     return Config()
+
 
 config = get_config()
