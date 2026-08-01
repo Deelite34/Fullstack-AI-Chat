@@ -1,8 +1,7 @@
 import { useState } from "react";
-import "./debug.css"
+import "./style.css"
 import {useModalRoot } from "../../hooks/useModalRoot"
 import { createPortal } from "react-dom";
-import ButtonForStreaming from "./StreamDebug";
 
 function AboutModal() {
     const [isAboutModalOpen, setIsAboutModalOpen] = useState<boolean>(false);
@@ -54,9 +53,9 @@ function AboutModal() {
 
 function ModalDisplay({handleToggleModal}: { handleToggleModal: () => void }) {
     return (
-            <div className="about-modal">
+            <div className="modal">
                 <h2>About this app</h2>
-                <div className="about-modal-content">
+                <div className="modal-content">
                     <p>This is a simple chatbot application, that uses Ollama (Local LLM) to generate responses. It is built with React and Typescript, with a FastAPI backend.</p>
                     <p>It is a learning experience for me, to learn new topics in frontend/full-stack programming.</p>
                     <p>Features AI chat built with React and Typescript, with Ollama (Local LLM) responses streamed from async FastAPI backend. Check README.md for up to date details.</p>

@@ -14,7 +14,7 @@
   transform: translateY(-50%);
 }
 
-.about-modal {
+.modal {
   border: solid 10px rgba(19, 10, 18, 0.3);
   display: flex;
   flex-direction: column;
@@ -35,7 +35,7 @@
   border: solid rgba(19, 10, 18, 0.6);
   margin: auto;
 }
-.about-modal button {
+.modal button {
   width: 12rem;
   background-color: rgba(19, 10, 18, 0.3);
   border: solid rgba(19, 10, 18, 0.4);
@@ -54,6 +54,6 @@
   z-index: 1;
 }
 
-.about-modal-content p {
+.modal-content p {
   margin: 1em;
 }

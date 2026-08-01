@@ -66,6 +66,8 @@ body {
   min-height: 100svh;
   box-sizing: border-box;
   display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 body {

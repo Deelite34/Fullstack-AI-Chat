@@ -38,4 +38,4 @@ Run main application, then run:
 
 To debug tests and if you are using vscode, run:
 `docker compose exec -it backend uv run debugpy --wait-for-client --listen 0.0.0.0:5679 -m pytest`
-then Run `Remote debug pytest tests` run config
+then Run `Remote debug pytest tests` run config in vscode, or it's command manually, by checking .vscode/launch.json run config directly

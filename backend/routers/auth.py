@@ -48,7 +48,7 @@ async def login_user(
     user_auth: UserAuthenticate,
     response: Response,
 ) -> TokenPair:
-    token_pair = auth_service.login(user_auth, response)
+    token_pair = auth_service.login(user_auth)
     if not token_pair:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
