@@ -1,5 +1,6 @@
 # Full Stack AI Chat
-<img width="1336" height="1269" alt="obraz" src="https://github.com/user-attachments/assets/542aa51c-5754-4890-a080-221e3809d41a" />
+<img width="1643" height="1205" alt="obraz" src="https://github.com/user-attachments/assets/0da8f23e-b75a-497c-9685-ea3e3c3b1209" />
+
 
 Full-stack AI chat application.
 Playground for learning and improving my front-end skills.
