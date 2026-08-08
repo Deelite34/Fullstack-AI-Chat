@@ -31,17 +31,21 @@ class TokenPair(BaseModel):
     token_type: str
 
 
-class AccessToken(BaseModel):
+class TokenInput(BaseModel):
+    """Only a token."""
+
+    token: str
+
+
+class Token(BaseModel):
     """Response for requests. Access token will live in cookies only."""
 
-    access_token: str
+    token: str
     token_type: str
 
     @staticmethod
-    def from_token_pair(token_pair: TokenPair) -> "AccessToken":
-        return AccessToken(
-            access_token=token_pair.access_token, token_type=token_pair.token_type
-        )
+    def access_token_from_pair(token_pair: TokenPair) -> "Token":
+        return Token(token=token_pair.access_token, token_type=token_pair.token_type)
 
 
 class JwtUser(BaseModel):

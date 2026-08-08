@@ -4,7 +4,7 @@ import json
 import logging
 import typing
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import httpx
 from langchain.agents import create_agent
@@ -12,11 +12,11 @@ from langchain.chat_models import init_chat_model
 from langchain_core.messages import AIMessageChunk, HumanMessage
 from langchain_core.stores import InMemoryBaseStore, InMemoryStore
 from langgraph.checkpoint.memory import InMemorySaver
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from langgraph.types import Checkpointer
     from langchain_core.runnables import RunnableConfig
+    from langgraph.types import Checkpointer
+
     from config.settings import Config
 
 
@@ -95,8 +95,8 @@ class OllamaAiClient(AbstractAiclient):
             AsyncGenerator[str]: response streamed from ollama character by character.
         """
         logger.warning(
-            "OllamaAiClient is deprecated, ",
-            "use LangchainOllamaClient rewrite utilizing langchain instead",
+            "OllamaAiClient is deprecated, "
+            "use LangchainOllamaClient rewrite utilizing langchain instead"
         )
         ollama_url = self.config.OLLAMA_URL
         ollama_model = self.config.OLLAMA_MODEL

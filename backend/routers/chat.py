@@ -1,12 +1,12 @@
 import logging
 from typing import Annotated
 
-from sqlalchemy.orm import Session
-
-from db import get_session
-from config.settings import config
 from fastapi import APIRouter, Depends
 from fastapi.responses import RedirectResponse, StreamingResponse
+from sqlalchemy.orm import Session
+
+from config.settings import config
+from db import get_session
 from schemas.chat import ChatInput
 from services.ai_service import AIServiceManager
 

@@ -1,9 +1,8 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import jwt
 import pytest
-from fastapi import HTTPException, Response
-from fastapi.responses import JSONResponse
+from fastapi import HTTPException
 
 from schemas.auth import UserAuthenticate
 
@@ -58,7 +57,7 @@ def test_login_returns_json_response_for_invalid_password(
     auth_service.user_repository.create_user(user_schema)
 
     with pytest.raises(HTTPException) as excinfo:
-        result = auth_service.login(
+        auth_service.login(
             UserAuthenticate(username=user_schema.username, password="wrong-password"),
         )
 
@@ -113,7 +112,7 @@ def test_verify_token_raises_for_invalid_token(auth_service):
 def test_verify_token_raises_for_expired_token(auth_service):
     expired_payload = {
         "sub": "123",
-        "exp": datetime.now(timezone.utc) - timedelta(minutes=1),
+        "exp": datetime.now(UTC) - timedelta(minutes=1),
     }
     expired_token = jwt.encode(
         expired_payload,
@@ -126,3 +125,47 @@ def test_verify_token_raises_for_expired_token(auth_service):
 
     assert excinfo.value.status_code == 401
     assert "expired" in str(excinfo.value.detail).lower()
+
+
+def test_logout_blacklists_access_token_when_not_expired(auth_service):  # TODO: implement auth_service fixture
+    ...
+
+
+def test_logout_blacklists_refresh_token_when_not_expired(auth_service):  # TODO: implement auth_service fixture
+    ...
+
+
+def test_logout_skips_blacklisting_for_already_expired_tokens(auth_service):  # TODO: implement auth_service fixture
+    ...
+
+
+def test_refresh_access_token_returns_new_pair_and_blacklists_old_access_token(
+    auth_service,
+):  # TODO: implement auth_service fixture
+    ...
+
+
+def test_refresh_access_token_blacklists_old_refresh_token(auth_service):  # TODO: implement auth_service fixture
+    ...
+
+
+def test_refresh_access_token_raises_for_invalid_refresh_token(auth_service):  # TODO: implement auth_service fixture
+    ...
+
+
+def test_authorize_current_user_returns_user_for_valid_access_token(
+    auth_service,
+):  # TODO: implement auth_service fixture
+    ...
+
+
+def test_authorize_current_user_raises_for_blacklisted_access_token(
+    auth_service,
+):  # TODO: implement auth_service fixture
+    ...
+
+
+def test_authorize_current_user_raises_for_invalid_or_missing_sub_claim(
+    auth_service,
+):  # TODO: implement auth_service fixture
+    ...

@@ -1,13 +1,12 @@
 import logging
 from collections.abc import Sequence
 
-from fastapi import HTTPException
 from sqlalchemy import or_, select
 
-from services.exceptions import CredentialsAlreadyUsed
-from repositories.base import BaseRepository
 from models.auth import User
+from repositories.base import BaseRepository
 from schemas.auth import UserCreate
+from services.exceptions import CredentialsAlreadyUsed
 
 logger = logging.getLogger(__name__)
 

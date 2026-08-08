@@ -1,6 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
 
-
 export type ChatMessage = {
   id: string;
   author: "user" | "bot";
@@ -22,9 +21,10 @@ export type ChatResponsesProps = {
 export type ChatInputProps = {
   setShowChatResponses: React.Dispatch<React.SetStateAction<boolean>>;
   setChatMsgs: React.Dispatch<React.SetStateAction<Array<ChatMessage>>>;
-  setLatestUserMessage: React.Dispatch<React.SetStateAction<ChatMessage | null>>;
+  setLatestUserMessage: React.Dispatch<
+    React.SetStateAction<ChatMessage | null>
+  >;
 };
-
 
 export type ChatOutputProps = {
   showChatResponses: boolean;
@@ -32,4 +32,4 @@ export type ChatOutputProps = {
   setChatMsgs: Dispatch<SetStateAction<ChatMessage[]>>;
   latestUserMessage: ChatMessage | null;
   onStreamComplete?: (chatMsgs: ChatMessage[]) => void;
-}
+};

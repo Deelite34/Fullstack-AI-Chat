@@ -112,3 +112,7 @@ prepend_sys_path = [
 # executable = "%(here)s/.venv/bin/ruff"
 # options = "check --fix REVISION_SCRIPT_FILENAME"
 
+[tool.ruff.lint]
+extend-select = [
+    "I001"
+]

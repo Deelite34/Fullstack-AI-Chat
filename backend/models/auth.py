@@ -1,7 +1,8 @@
 import uuid
+from datetime import datetime
 
 import bcrypt
-from sqlalchemy import String
+from sqlalchemy import DateTime, String
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -49,3 +50,12 @@ class User(db.Base):
     def password(self, password: str) -> None:
         """Hash value and set it as password for model instance"""
         self._password = self.make_salted_hash(password)
+
+
+class ExpiredAccessTokens(db.Base):
+    __tablename__ = "expired_access_tokens"
+
+    token: Mapped[str] = mapped_column(primary_key=True, unique=True)
+    expire_time: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )

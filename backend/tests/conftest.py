@@ -1,17 +1,17 @@
 import logging
+from collections.abc import Iterator
 from uuid import uuid4
 
 import pytest
-from typing import Iterator
+from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
-from services.user_service import get_user_service
-from services.auth_service import get_auth_service
-from schemas.auth import UserCreate
-from repositories.users import UserRepository
+
 from config.settings import config
 from db import Base
-from sqlalchemy import create_engine
-
+from repositories.users import UserRepository
+from schemas.auth import UserCreate
+from services.auth_service import get_auth_service
+from services.user_service import get_user_service
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +75,6 @@ def random_user_schema():
     """Generate schema for random user"""
     return UserCreate(
         username="testuser-" + str(uuid4()),
-        email=f"test_email_{str(uuid4())}@test.com",
+        email=f"test_email_{uuid4()}@test.com",
         password="test_password",
     )

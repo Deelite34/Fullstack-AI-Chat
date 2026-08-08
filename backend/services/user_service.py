@@ -1,14 +1,13 @@
 import logging
 from typing import Annotated
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from services.exceptions import CredentialsAlreadyUsed
 from db import get_session
 from repositories.users import UserRepository
 from schemas.auth import UserCreate, UserRead, UserReadList
-
+from services.exceptions import CredentialsAlreadyUsed
 
 logger = logging.getLogger()
 

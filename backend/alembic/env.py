@@ -1,7 +1,6 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 
@@ -17,7 +16,7 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 # for 'autogenerate' support
 from models.auth import User, db  # noqa
-from config.settings import get_config  # noqa
+from config.settings import get_config
 
 # Set db url from env vars
 config.set_main_option("sqlalchemy.url", get_config().db_url)  # type: ignore

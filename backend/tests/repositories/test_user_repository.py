@@ -1,4 +1,3 @@
-from fastapi import HTTPException
 import pytest
 
 from services.exceptions import CredentialsAlreadyUsed
@@ -95,6 +94,11 @@ def test_check_user_by_username_exists_reports_presence_and_absence(
     )
     created_user = user_repository.create_user(user_schema)
 
-    assert user_repository.check_user_by_username_exists(user_schema.username) is not None
-    assert user_repository.check_user_by_username_exists(user_schema.username).id == created_user.id
+    assert (
+        user_repository.check_user_by_username_exists(user_schema.username) is not None
+    )
+    assert (
+        user_repository.check_user_by_username_exists(user_schema.username).id
+        == created_user.id
+    )
     assert user_repository.check_user_by_username_exists("not_a_real_user") is None

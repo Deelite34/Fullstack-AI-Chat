@@ -1,11 +1,12 @@
 import logging
 import logging.config
 
-from config.settings import config
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers.chat import llm_router
+
+from config.settings import config
 from routers.auth import auth_router
+from routers.chat import llm_router
 
 
 def configure_logging():

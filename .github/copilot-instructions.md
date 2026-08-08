@@ -1,5 +1,8 @@
 # Copilot instructions for AI Chat ollama
 
+## About project
+This is project of a web application that allows user to chat with LLM AI. Goal of it is learning, implementation of features to create a full web application, while keeping high code quality, reasonable security and maintainability. It is not meant to be a production ready application, but rather a learning project.
+
 ## Purpose
 
 Use these instructions when working in this repository. Keep changes consistent with the existing architecture, toolchain, and repository layout.
@@ -27,3 +30,7 @@ For example:
 - Frontend code lives in `frontend/`.
 - Docker configuration is in `docker-compose.yml`.
 - Environment example values are in `example.env`.
+
+## Other notes
+- This is a pet project, and as such, it is used to learn, implement, and finish features, not to perfect them. If feature works, has reasonable security, code quality and structure and is not broken, then it can be finished. Do notice, and note if something should be improved for production,but do not list it as mandatory.
+- If relevant, note chances to improve code by using design pattern instead, but only if it will actually improve it.

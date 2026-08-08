@@ -2,36 +2,46 @@ import type { ChatInputProps, ChatMessage } from "./types";
 import { makeId } from "./common";
 import { useState } from "react";
 
-
 export function ChatInput(props: ChatInputProps) {
   // Component with chat text input and button to sent it
   const { setShowChatResponses, setChatMsgs, setLatestUserMessage } = props;
   const [inputValue, setInputValue] = useState("");
-  
+
   const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     // handle form submit event for chat input
     event.preventDefault();
     const trimmed = inputValue.trim();
     if (!trimmed) return;
 
-    const newMsg: ChatMessage = { id: makeId("user"), author: "user", msg: trimmed };
+    const newMsg: ChatMessage = {
+      id: makeId("user"),
+      author: "user",
+      msg: trimmed,
+    };
     setChatMsgs((prev) => [...prev, newMsg]);
     setLatestUserMessage(newMsg);
     setShowChatResponses(true);
     setInputValue("");
   };
 
-  function handleFormCtrlEnter(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+  function handleFormCtrlEnter(
+    event: React.KeyboardEvent<HTMLTextAreaElement>,
+  ) {
     // send chat input if we press ctrl+enter while focus is in input box
-    if(event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault();
-        handleSubmit(event as unknown as React.SubmitEvent<HTMLFormElement>);
+    if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      handleSubmit(event as unknown as React.SubmitEvent<HTMLFormElement>);
     }
   }
-  
+
   return (
     <div className="w-full sm:min-w-68 min-w-0 flex items-center py-2 flex-row mt-0 min-h-[20%] bg-slate-800 text-slate-200">
-      <form id="chat-input" onSubmit={handleSubmit} className="input-container flex flex-row justify-between w-full items-center px-8" action="">
+      <form
+        id="chat-input"
+        onSubmit={handleSubmit}
+        className="input-container flex flex-row justify-between w-full items-center px-8"
+        action=""
+      >
         <textarea
           className="bg-slate-900 text-slate-400 text-wrap p-2 resize-none input w-full rounded-xl field-sizing-content overflow-y-scroll h-24 max-h-24"
           autoFocus={true}
@@ -41,7 +51,7 @@ export function ChatInput(props: ChatInputProps) {
           wrap="soft"
           rows={4}
           value={inputValue}
-          onChange={(e)=>setInputValue(e.target.value)}
+          onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleFormCtrlEnter}
           spellCheck={false}
         />
@@ -65,5 +75,5 @@ export function ChatInput(props: ChatInputProps) {
         </button>
       </form>
     </div>
-  )
+  );
 }

@@ -1,11 +1,12 @@
+import os
+import typing
 from datetime import timedelta
 from functools import lru_cache
-import os
 
 
 class Config:
-    # Jwt settings
-    SECRET_KEY = os.environ.get("SECRET_KEY", "supersecretvalue")
+    # jwt
+    SECRET_KEY = os.environ.get("SECRET_KEY")
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
     REFRESH_TOKEN_EXPIRES = timedelta(days=1)
@@ -13,17 +14,10 @@ class Config:
     DEBUG = True
     LOG_LEVEL = os.getenv("LOG_LEVEL")
 
-    APP_DB_USER = os.environ.get("APP_DB_USER")
-    APP_DB_PASSWORD = os.environ.get("APP_DB_PASSWORD")
-    APP_DB_NAME = os.environ.get("APP_DB_NAME")
-    APP_DB_HOSTNAME = os.environ.get("APP_DB_HOSTNAME")
+    # general env vars retrieval
+    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "test_key")
 
-    TEST_APP_DB_USER = os.environ.get("TEST_APP_DB_USER")
-    TEST_APP_DB_PASSWORD = os.environ.get("TEST_APP_DB_PASSWORD")
-    TEST_APP_DB_NAME = os.environ.get("TEST_APP_DB_NAME")
-    TEST_APP_DB_HOSTNAME = os.environ.get("TEST_APP_DB_HOSTNAME")
-
-    LOGGING_CONFIG = {
+    LOGGING_CONFIG: typing.ClassVar = {
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
@@ -58,16 +52,27 @@ class Config:
             },
         },
     }
+    # database
+    APP_DB_USER = os.environ.get("APP_DB_USER")
+    APP_DB_PASSWORD = os.environ.get("APP_DB_PASSWORD")
+    APP_DB_NAME = os.environ.get("APP_DB_NAME")
+    APP_DB_HOSTNAME = os.environ.get("APP_DB_HOSTNAME")
+
+    TEST_APP_DB_USER = os.environ.get("TEST_APP_DB_USER")
+    TEST_APP_DB_PASSWORD = os.environ.get("TEST_APP_DB_PASSWORD")
+    TEST_APP_DB_NAME = os.environ.get("TEST_APP_DB_NAME")
+    TEST_APP_DB_HOSTNAME = os.environ.get("TEST_APP_DB_HOSTNAME")
     DB_ECHO = True
 
-    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "test_key")
-
+    # fastapi
     # TODO: check later best way to set this up, at least for local development
-    cors_origins = []
+    cors_origins = ("http://localhost:5173",)
 
+    # rabbitmq
     RABBITMQ_HOST = os.environ.get("RABBITMQ_HOST", "rabbitmq")
     RABBITMQ_MAX_CONN_RETRIES = 3
 
+    # AI settings
     AIService = "langchain-ollama"
     OLLAMA_ROOT_URL = "http://ollama:11434"
     OLLAMA_URL = f"{OLLAMA_ROOT_URL}/api/chat"

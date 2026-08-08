@@ -46,7 +46,8 @@ function StreamExample() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          chat_text: "Respond in 1 concise sentence, confirming that AI model response stream endpoint is ready.",
+          chat_text:
+            "Respond in 1 concise sentence, confirming that AI model response stream endpoint is ready.",
         }),
       });
       if (!response.body) {
@@ -80,7 +81,7 @@ function StreamExample() {
         <div>{data || "\u00A0"}</div>
       </div>
       <div className="text-slate-200">
-        <strong>Streamed data: </strong> 
+        <strong>Streamed data: </strong>
         <div>{streamData}</div>
       </div>
     </div>
@@ -102,6 +103,5 @@ function ButtonForStreaming() {
     </div>
   );
 }
-
 
 export default ButtonForStreaming;

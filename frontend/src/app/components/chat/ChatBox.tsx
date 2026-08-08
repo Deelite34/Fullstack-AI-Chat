@@ -4,12 +4,12 @@ import type { ChatMessage } from "./types.tsx";
 import { ChatInput } from "./ChatInput.tsx";
 import { ChatOutput } from "./ChatOutput.tsx";
 
-
 function ConversationChatBox() {
   // Chatbox input and output component
   const [showChatResponses, setShowChatResponses] = useState<boolean>(false);
   const [chatMsgs, setChatMsgs] = useState<Array<ChatMessage>>([]);
-  const [latestUserMessage, setLatestUserMessage] = useState<ChatMessage | null>(null);
+  const [latestUserMessage, setLatestUserMessage] =
+    useState<ChatMessage | null>(null);
 
   const handleStreamComplete = (finalChatMsgs: ChatMessage[]) => {
     console.log("Stream finished, final chat history:", finalChatMsgs);
@@ -25,7 +25,7 @@ function ConversationChatBox() {
         latestUserMessage={latestUserMessage}
         onStreamComplete={handleStreamComplete}
       />
-      
+
       <ChatInput
         setShowChatResponses={setShowChatResponses}
         setChatMsgs={setChatMsgs}
