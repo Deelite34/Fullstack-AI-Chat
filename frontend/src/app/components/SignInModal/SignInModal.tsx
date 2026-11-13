@@ -3,10 +3,12 @@ import "./style.css";
 import { useModalRoot } from "../../hooks/useModalRoot";
 import { createPortal } from "react-dom";
 import { toast } from "react-toastify";
+import { useAuth } from "../../Context/useAuth";
 
 function SignInModal() {
   const [isLogInModalOpen, setIsLogInModalOpen] = useState<boolean>(false);
   const modalRoot = useModalRoot();
+  const { loginUser } = useAuth();
   const modalNonFocusBg: HTMLElement | null =
     document.getElementById("nonfocus-bg");
 
@@ -19,22 +21,8 @@ function SignInModal() {
     const password = String(formData.get("password") ?? "");
 
     try {
-      const response = await fetch("/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || "Log in failed");
-      }
+      await loginUser(username, password);
       handleToggleModal();
-      toast.success("Logged in succesfully");
-      console.info("Logged in successfully", data);
       form.reset();
     } catch (error) {
       toast.error(`Logging in failed: \n${error}`);
@@ -42,8 +30,6 @@ function SignInModal() {
     }
   }
 
-  // TODO: refactor style.css, so common modal classess can be reused, and specific ones can be added for each modal.
-  // Currently, the about and login modals have duplicate code in their respective style.css files.
   function toggleModalClasses(
     element: HTMLElement | null,
     stateShow: boolean,
@@ -103,7 +89,7 @@ function ModalDisplay({
 }) {
   return (
     <div className="modal">
-      <h2>Sign in PLACEHOLDER</h2>
+      <h2>Sign in</h2>
       <div className="modal-content">
         <p>Please enter your credentials to sign in.</p>
         <form className="flex flex-col m-2" onSubmit={handleSignIn}>

@@ -1,6 +1,7 @@
 import logging
 from datetime import UTC, datetime
 from typing import Annotated
+from uuid import uuid4
 
 import jwt
 from fastapi import Depends, HTTPException
@@ -115,8 +116,12 @@ class AuthService:
 
         access_expire = datetime.now(UTC) + config.ACCESS_TOKEN_EXPIRES
         refresh_expire = datetime.now(UTC) + config.REFRESH_TOKEN_EXPIRES
-        access_to_encode.update({"sub": str(user_id), "exp": access_expire})
-        refresh_to_encode.update({"sub": str(user_id), "exp": refresh_expire})
+        access_to_encode.update(
+            {"sub": str(user_id), "exp": access_expire, "jti": uuid4().hex}
+        )
+        refresh_to_encode.update(
+            {"sub": str(user_id), "exp": refresh_expire, "jti": uuid4().hex}
+        )
 
         encoded_access = jwt.encode(
             access_to_encode, config.SECRET_KEY, algorithm=config.ALGORITHM
@@ -130,11 +135,11 @@ class AuthService:
         self,
         access_payload: dict | None,
         refresh_payload: dict,
-        access_token: TokenInput,
+        access_token: TokenInput | None,
         refresh_token: str,
     ) -> TokenPair:
         """Prepare new access token and blacklist previous one. Assume that refresh token is not expired"""
-        if access_payload:  # blacklist access token if not expired
+        if access_payload and access_token:
             self.blacklist_token(access_token.token, access_payload["exp"])
         new_token_pair = self.prepare_jwt_tokens(refresh_payload["sub"])
         # If refresh is expired too, we this will raise error - router should then raise http error, so frontend can redirect user to log in page
@@ -183,8 +188,12 @@ class AuthService:
 
         access_expire = datetime.now(UTC) + config.ACCESS_TOKEN_EXPIRES
         refresh_expire = datetime.now(UTC) + config.REFRESH_TOKEN_EXPIRES
-        access_to_encode.update({"sub": str(user_id), "exp": access_expire})
-        refresh_to_encode.update({"sub": str(user_id), "exp": refresh_expire})
+        access_to_encode.update(
+            {"sub": str(user_id), "exp": access_expire, "jti": uuid4().hex}
+        )
+        refresh_to_encode.update(
+            {"sub": str(user_id), "exp": refresh_expire, "jti": uuid4().hex}
+        )
 
         encoded_access = jwt.encode(
             access_to_encode, config.SECRET_KEY, algorithm=config.ALGORITHM
@@ -244,9 +253,9 @@ class AuthService:
             raise credentials_exception
         return user
 
-    def blacklist_token(self, token: str, expire_time):
+    def blacklist_token(self, token: str, expire_time: int | float):
         """Blacklist token by adding it to the expired tokens table"""
-        # TODO: note: cleanup could run as regular cronjob for more optimal performance, not on every request
+        # note: cleanup could run as regular cronjob for more optimal performance, not on every request
         self.expired_access_tokens_repository.expired_token_cleanup()
         self.expired_access_tokens_repository.blacklist_token(token, expire_time)
 

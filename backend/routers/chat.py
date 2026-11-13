@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from config.settings import config
 from db import get_session
 from schemas.chat import ChatInput
+from services.auth_service import authorize_current_user
 from services.ai_service import AIServiceManager
 
 llm_router = APIRouter()
@@ -24,7 +25,9 @@ async def debug_view():
     return {"message": "backend is working"}
 
 
-@llm_router.post("/api/stream", status_code=200)
+@llm_router.post(
+    "/api/stream", status_code=200, dependencies=[Depends(authorize_current_user)]
+)
 async def stream_response(
     chat_message: ChatInput, session: Annotated[Session, Depends(get_session)]
 ):
@@ -47,7 +50,11 @@ async def stream_response(
     )
 
 
-@llm_router.post("/api/stream/debug", status_code=200)
+@llm_router.post(
+    "/api/stream/debug",
+    status_code=200,
+    dependencies=[Depends(authorize_current_user)],
+)
 async def stream_debug_response(
     chat_message: ChatInput,
     db: Annotated[Session, Depends(get_session)],

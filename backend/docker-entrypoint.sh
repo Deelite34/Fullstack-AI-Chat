@@ -1,10 +1,10 @@
 #!/bin/sh
 
-# uv run alembic upgrade head
-# if [ $? -ne 0]; then
-#     echo "Database migration failed."
-#     exit 1
-# fi
+uv run alembic upgrade head
+if [ $? -ne 0]; then
+    echo "Database migration failed."
+    exit 1
+fi
 
 
 # debugpy allows debugger use inside docker container in vs code

@@ -46,13 +46,13 @@ async def register_user(
     return new_user
 
 
-@auth_router.post("/auth/login", status_code=200, response_model=TokenPair)
+@auth_router.post("/auth/login", status_code=200, response_model=Token)
 async def login_user(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
     user_auth: UserAuthenticate,
     response: Response,
 ) -> Token:
-    # TODO: note: could use CSRF protection (both backend+frontend) for login endpoint,
+    # note: could use CSRF protection (both backend+frontend) for login endpoint,
     # and also for refresh token endpoint, to prevent CSRF attacks
     # skipped it to avoid scope creep
     token_pair = auth_service.login(user_auth)
@@ -67,19 +67,19 @@ async def login_user(
         value=token_pair.refresh_token,
         httponly=True,
         secure=True,
-        samesite="lax",  # TODO: note: strict could theoretically be used here if this would ever be moved to production
+        samesite="lax",  # note: strict could theoretically be used here if this would ever be moved to production
     )
     return Token.access_token_from_pair(token_pair)
 
 
-@auth_router.post("/auth/logout", status_code=200, response_model=TokenPair)
+@auth_router.post("/auth/logout", status_code=204)
 async def logout_user(
     auth: Annotated[User, Depends(authorize_current_user)],
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
     access_token: TokenInput,
     response: Response,
     request: Request,
-):
+) -> None:
     refresh_token = request.cookies.get("refresh_token")
     if not refresh_token:
         logger.info("Missing refresh token in logout request")
@@ -93,12 +93,19 @@ async def logout_user(
     response.delete_cookie(key="refresh_token", secure=True, samesite="lax")
 
 
+@auth_router.get("/auth/me", status_code=200, response_model=UserRead)
+async def get_current_user(
+    auth: Annotated[User, Depends(authorize_current_user)],
+) -> User:
+    return auth
+
+
 @auth_router.post("/auth/tokens/refresh", status_code=200, response_model=Token)
 async def refresh_access_token(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
-    access_token: TokenInput,
     request: Request,
     response: Response,
+    access_token: TokenInput | None = None,
 ) -> Token:
     """
     Refresh access token, and also refresh token -
@@ -126,7 +133,7 @@ async def refresh_access_token(
             "Possible security issue: There was attempt to refresh blacklisted refresh token, possible token reuse attempt %s",
             refresh_token,
         )
-        # TODO: note: here this could theoretically use some more advanced handling of possible security issue - more detailed logs, saving IP address, etc..
+        # note: here this could theoretically use some more advanced handling of possible security issue - more detailed logs, saving IP address, etc..
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Refresh token not found",
@@ -134,24 +141,25 @@ async def refresh_access_token(
         )
 
     access_payload = None
-    try:
-        access_payload = auth_service.verify_token(access_token.token)
-    except TokenExpired:
-        # Access token is expired, but we can still refresh it
-        logger.debug(
-            "Access token expired, refreshing for user %s", refresh_payload["sub"]
-        )
-    except TokenAlreadyBlacklisted:
-        logger.warning(
-            "Possible security issue: There was attempt to refresh blacklisted access token, possible token reuse attempt %s",
-            access_token,
-        )
-        # TODO: here this could theoretically use some more advanced handling of possible security issue - more detailed logs, saving IP address, etc..
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Access token not found",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    if access_token:
+        try:
+            access_payload = auth_service.verify_token(access_token.token)
+        except TokenExpired:
+            # Access token is expired, but we can still refresh it
+            logger.debug(
+                "Access token expired, refreshing for user %s", refresh_payload["sub"]
+            )
+        except TokenAlreadyBlacklisted:
+            logger.warning(
+                "Possible security issue: There was attempt to refresh blacklisted access token, possible token reuse attempt %s",
+                access_token,
+            )
+            # here this could theoretically use some more advanced handling of possible security issue - more detailed logs, saving IP address, etc..
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Access token not found",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
     new_token_pair = auth_service.refresh_access_token(
         access_payload, refresh_payload, access_token, refresh_token

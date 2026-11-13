@@ -20,23 +20,3 @@ def test_list_users_returns_all_users(user_service, user_schema_factory):
     assert any(user.username == first_user.username for user in users.users)
     assert any(user.email == second_user.email for user in users.users)
     assert all(user.id is not None for user in users.users)
-
-
-def test_get_user_by_id_returns_user_schema_for_existing_user(user_service):  # TODO: implement user_service fixture
-    ...
-
-
-def test_get_user_by_id_returns_none_for_missing_user(user_service):  # TODO: implement user_service fixture
-    ...
-
-
-def test_get_user_by_username_returns_user_schema_for_existing_user(user_service):  # TODO: implement user_service fixture
-    ...
-
-
-def test_get_user_by_username_returns_none_for_missing_user(user_service):  # TODO: implement user_service fixture
-    ...
-
-
-def test_create_user_raises_for_duplicate_username_or_email(user_service):  # TODO: implement user_service fixture
-    ...

@@ -6,25 +6,14 @@ export function useModalRoot() {
 
   useEffect(() => {
     let root = document.getElementById("modal-root");
-    // Prevent other modals from doing duplicate clean up (and causing errors) when they also use useModalRoot
-    // by keeping track of whether this hook created the root or not
-    let rootCreated = false;
     if (!root) {
       root = document.createElement("div");
       root.id = "modal-root";
       root.classList.add("hidden", "-z-9999");
       document.body.appendChild(root);
-      rootCreated = true;
     }
 
     setModalRoot(root);
-
-    // cleanup
-    return () => {
-      if (rootCreated && root && root.childNodes.length === 0) {
-        document.body.removeChild(root);
-      }
-    };
   }, []);
   return modalRoot;
 }

@@ -43,8 +43,6 @@ function SignUpModal() {
     }
   }
 
-  // TODO: refactor style.css, so common modal classess can be reused, and specific ones can be added for each modal.
-  // Currently, the about and SignUp modals have duplicate code in their respective style.css files.
   function toggleModalClasses(
     element: HTMLElement | null,
     stateShow: boolean,

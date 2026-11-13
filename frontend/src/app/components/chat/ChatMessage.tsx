@@ -2,6 +2,38 @@ import "./ChatBox.css";
 import { useEffect, useRef } from "react";
 import { makeId } from "./common.tsx";
 import type { ChatResponsesProps, ChatMessage } from "./types.tsx";
+import { getAccessToken, refreshAccessToken } from "../../Services/api";
+
+async function requestChatStream(chatText: string, signal: AbortSignal) {
+  let token = getAccessToken();
+  if (!token) {
+    throw new Error("Please log in to send a message.");
+  }
+
+  const sendRequest = (accessToken: string) =>
+    fetch("/api/stream", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ chat_text: chatText }),
+      signal,
+    });
+
+  let response = await sendRequest(token);
+  if (response.status === 401) {
+    token = await refreshAccessToken();
+    response = await sendRequest(token);
+  }
+  if (!response.ok) {
+    throw new Error(`Chat request failed with status ${response.status}`);
+  }
+  if (!response.body) {
+    throw new Error("No response from backend stream endpoint.");
+  }
+  return response.body;
+}
 
 export function ChatResponses({
   chatMsgs,
@@ -27,8 +59,7 @@ export function ChatResponses({
 
     const botId = makeId("bot");
     tempBotIdRef.current = botId;
-    console.log("MESSAGE HISTORY AFTER USER MESSAGE:");
-    console.log(chatMsgs);
+
     // Insert placeholder bot message immediately so streaming is visible even for the first message
     setChatMsgs((prev) => [
       ...prev,
@@ -39,22 +70,14 @@ export function ChatResponses({
       await sleep(30); // tiny delay for UX
 
       try {
-        const response = await fetch("/api/stream", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_text: userMessage.msg }),
-          signal,
-        });
-        if (!response || !response.body)
-          throw new Error("No response from backend stream endpoint.");
-        const reader = response.body.getReader();
+        const stream = await requestChatStream(userMessage.msg, signal);
+        const reader = stream.getReader();
         const decoder = new TextDecoder();
         let result = "";
 
         while (true) {
           const { done, value } = await reader.read();
           if (done || signal.aborted) {
-            console.log("This should contain FINAL chat msgs list");
             console.log(latestChatMsgsRef.current);
             break;
           }

@@ -1,20 +1,32 @@
 import type React from "react";
-import { createContext, useContext, useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { loginAPI, registerAPI } from "../Services/AuthService";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import axios from "axios";
-import type { UserProfile } from "../models/User";
+import { toast } from "react-toastify";
+import {
+  getCurrentUserAPI,
+  loginAPI,
+  logoutAPI,
+  refreshAPI,
+  type UserProfile,
+} from "../Services/AuthService";
+import {
+  getAccessToken,
+  setAccessToken,
+  setSessionExpiredHandler,
+} from "../Services/api";
 
-// TODO: MIGRATE FROM FETCH API TO AXIOS AND USE DEFAULT(AUTO INJECTED AUTH HEADERS)
-// https://youtu.be/h3_YKC2VGfE?si=wdlmuBOcHE_AFzcJ&t=1141
 type UserContextType = {
   user: UserProfile | null;
-  token: string | null;
-  loginUser: (username: string, password: string) => void;
-  registerUser: (email: string, username: string, password: string) => void;
-  logoutUser: () => void;
-  isLoggedIn: () => boolean;
+  sessionState: "checking" | "ready" | "unavailable";
+  retrySessionCheck: () => Promise<void>;
+  loginUser: (username: string, password: string) => Promise<void>;
+  logoutUser: () => Promise<void>;
 };
 
 type Props = { children: React.ReactNode };
@@ -22,87 +34,81 @@ type Props = { children: React.ReactNode };
 const UserContext = createContext<UserContextType>({} as UserContextType);
 
 export const UserProvider = ({ children }: Props) => {
-  // const navigate = useNavigate();
-  const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [isReady, setIsReady] = useState(false);
+  const [sessionState, setSessionState] = useState<
+    UserContextType["sessionState"]
+  >("checking");
 
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
-    if (user && token) {
-      setUser(JSON.parse(user));
-      setToken(token);
-      axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+  const retrySessionCheck = useCallback(async () => {
+    setSessionState("checking");
+    try {
+      const { data: tokenResponse } = await refreshAPI();
+      setAccessToken(tokenResponse.token);
+      const { data: currentUser } = await getCurrentUserAPI();
+      setUser(currentUser);
+      setSessionState("ready");
+    } catch (error) {
+      setAccessToken(null);
+      setUser(null);
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setSessionState("ready");
+      } else {
+        console.error("Could not restore the authentication session", error);
+        setSessionState("unavailable");
+      }
     }
-    setIsReady(true);
   }, []);
 
-  const registerUser = async (
-    email: string,
-    username: string,
-    password: string,
-  ) => {
-    await registerAPI(email, username, password)
-      .then((res) => {
-        if (res) {
-          localStorage.setItem("token", res?.data.token);
-          const userObj = {
-            username: res?.data.username,
-            email: res?.data.email,
-          };
-          setToken(res?.data.access_token!);
-          setUser(userObj!);
-          toast.success("Registration succesful");
-        }
-      })
-      .catch((e) => toast.warning(`Server error occured: ${e}`));
-  };
+  useEffect(() => {
+    setSessionExpiredHandler(() => {
+      setUser(null);
+      setSessionState("ready");
+    });
+
+    const startupCheck = window.setTimeout(() => {
+      void retrySessionCheck();
+    }, 0);
+    return () => {
+      window.clearTimeout(startupCheck);
+      setSessionExpiredHandler(() => {});
+    };
+  }, [retrySessionCheck]);
 
   const loginUser = async (username: string, password: string) => {
-    await loginAPI(username, password)
-      .then((res) => {
-        if (res) {
-          localStorage.setItem("token", res?.data.token);
-          // TODO login endpoint returns access/refresh tokens, not username/email
-          const userObj = {
-            username: res?.data.username,
-            email: res?.data.email,
-          };
-          setToken(res?.data.access_token!);
-          setUser(userObj!);
-          toast.success("Login succesful");
-        }
-      })
-      .catch((e) => toast.warning(`Server error occured: ${e}`));
+    const { data: tokenResponse } = await loginAPI(username, password);
+    setAccessToken(tokenResponse.token);
+    try {
+      const { data: currentUser } = await getCurrentUserAPI();
+      setUser(currentUser);
+      setSessionState("ready");
+      toast.success("Logged in successfully");
+    } catch (error) {
+      setAccessToken(null);
+      setUser(null);
+      setSessionState("ready");
+      throw error;
+    }
   };
 
-  const isLoggedIn = () => {
-    return !!user;
-  };
-
-  const validateSession = () => {
-    // explicitly log user out
-    const session_valid = !!user;
-    if(!!user) {logoutUser()};
-    
-
-  }
-
-  const logoutUser = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+  const logoutUser = async () => {
+    const token = getAccessToken();
+    if (token) {
+      await logoutAPI(token);
+    }
+    setAccessToken(null);
     setUser(null);
-    setToken("");
+    setSessionState("ready");
+    toast.success("Logged out");
   };
 
   return (
     <UserContext.Provider
-      value={{ loginUser, user, token, logoutUser, isLoggedIn, registerUser }}
+      value={{ loginUser, user, logoutUser, sessionState, retrySessionCheck }}
     >
-      {isReady ? children : null}
+      {children}
     </UserContext.Provider>
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(UserContext);

@@ -1,53 +1,23 @@
 import api from "./api";
 
-// base url is handled by vite proxy
+export type AccessTokenResponse = { token: string; token_type: string };
 
-export const registerAPI = async (
-  username: string,
-  email: string,
-  password: string,
-) => {
-  try {
-    const { data } = await api.post("/auth/register", {
-      username,
-      email,
-      password,
-    });
-
-    console.info("Registered successfully", data);
-    return data;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+export type UserProfile = {
+  id: number;
+  username: string;
+  email: string;
 };
 
-export const loginAPI = async (username: string, password: string) => {
-  try {
-    const { data } = await api.post("/auth/login", {
-      username,
-      password,
-    });
+export const loginAPI = (username: string, password: string) =>
+  api.post<AccessTokenResponse>("/auth/login", { username, password });
 
-    console.info("Logged in successfully", data);
-    return data;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
+export const getCurrentUserAPI = () => api.get<UserProfile>("/auth/me");
 
-export const checkJWT = async (access_token: string) => {
-  try {
-    const { data } = await api.post("/auth/login", {
-      username,
-      password,
-    });
+export const refreshAPI = (token?: string) =>
+  api.post<AccessTokenResponse>(
+    "/auth/tokens/refresh",
+    token ? { token } : undefined,
+  );
 
-    console.info("Logged in successfully", data);
-    return data;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
+export const logoutAPI = (token: string) =>
+  api.post<void>("/auth/logout", { token });

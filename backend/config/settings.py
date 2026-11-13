@@ -65,7 +65,6 @@ class Config:
     DB_ECHO = True
 
     # fastapi
-    # TODO: check later best way to set this up, at least for local development
     cors_origins = ("http://localhost:5173",)
 
     # rabbitmq

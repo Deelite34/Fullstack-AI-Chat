@@ -1,30 +1,26 @@
 # Full Stack AI Chat
-<img width="1643" height="1205" alt="obraz" src="https://github.com/user-attachments/assets/0da8f23e-b75a-497c-9685-ea3e3c3b1209" />
-
+<img src="./imgs/preview_1.png" />
+<img src="./imgs/preview_2.png" />
+<img src="./imgs/preview_3.png" />
 
 Full-stack AI chat application.
-Playground for learning and improving my front-end skills.
+Playground for learning and improving my frontend/fullstack skills.
 
 ## Stack
 
 - Frontend: javascript with react, typescript, vite
 - Backend: Python, fastapi, Ollama for running local ai model
+- Ollama3.2 model
 
-## Features and plans
+## Features
 
-- AI Chat, where you can talk with AI LLM, and model keeps track of current conversation in memory.
-- Chat utilizes http streaming for fluent response display
-- Full typing with typescript and type hints for both backend and frontend
-- Files cleanly divided into specific categories in frontend and backend
-- Uses repository, service layer for code structure
+- AI Chat, where you can talk with AI LLM (provided by local model with Ollama3.2), and model keeps track of current conversation in memory.
+- Chat utilizes HTTP streaming for fluent response display
+- Authentication with JWT, blacklisting tokens.
+- Typing with typescript and type hints for both backend and frontend
+- Files cleanly divided into specific modules and areas in frontend and backend
+- Uses repository and service layer for code structure
 - Frontend responsiveness through scaling html elements size as screen width decreases (clamp)- visible site elements keep reasonable size with lower screen sizes (until some minimal size)
-
-Features to work on or consider, but while also resisting feature creep, where I try to make everything perfect while delaying implementing more important or useful things such as:
-
-- Unit/integration tests for streaming
-- General frontend tests (jest library?)
-- Implementing and learning how to handle frontend side of logging in and sessions
-- Add option to persists conversation in PostgreSQL database instead of memory
 
 ## Running
 Create `.env` file based on `example.env` in project root.
@@ -33,7 +29,7 @@ docker compose up --build --watch
 docker compose exec -it backend uv run alembic upgrade head
 Launch [website in http://localhost:5173/](http://localhost:5173/)
 
-## tests
+## Running tests
 Run main application, then run:
 `docker compose exec -it backend uv run -m pytest`
 

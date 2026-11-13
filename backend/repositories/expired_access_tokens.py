@@ -18,8 +18,9 @@ class ExpiredTokenRepository(BaseRepository):
             is not None
         )
 
-    def blacklist_token(self, token: str, expire_time: int):
-        expired_token = ExpiredAccessTokens(token=token, expire_time=expire_time)
+    def blacklist_token(self, token: str, expire_time: int | float):
+        expire_datetime = datetime.fromtimestamp(expire_time, tz=UTC)
+        expired_token = ExpiredAccessTokens(token=token, expire_time=expire_datetime)
         self.db.add(expired_token)
         self.db.commit()
 

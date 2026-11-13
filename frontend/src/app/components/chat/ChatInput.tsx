@@ -1,10 +1,13 @@
 import type { ChatInputProps, ChatMessage } from "./types";
 import { makeId } from "./common";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import { useAuth } from "../../Context/useAuth";
 
 export function ChatInput(props: ChatInputProps) {
   // Component with chat text input and button to sent it
   const { setShowChatResponses, setChatMsgs, setLatestUserMessage } = props;
+  const { user } = useAuth();
   const [inputValue, setInputValue] = useState("");
 
   const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -12,6 +15,10 @@ export function ChatInput(props: ChatInputProps) {
     event.preventDefault();
     const trimmed = inputValue.trim();
     if (!trimmed) return;
+    if (!user) {
+      toast.info("Please log in to send a message.");
+      return;
+    }
 
     const newMsg: ChatMessage = {
       id: makeId("user"),
